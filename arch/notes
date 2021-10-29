@@ -1,0 +1,2 @@
+1. when query service loses data (posts or comments, or any other type), client no longer displays the missing data.
+2. have to document what different properties exists inside every event that exists inside our application

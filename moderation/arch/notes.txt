@@ -1,0 +1,10 @@
+1. user submits a comment to the comments service
+2. comments service persists the comment (notably, comment.status is known to be pending)
+3. comments service emits a type:"CommentCreated" event to the event bus
+4. event bus emits "CommentCreated" event to moderation service and query service
+5. moderation service processes (moderates) the comment and emits a type:"CommentModerated" event to the event bus
+6. event bus emits "CommentModerated" event only to the comments service. (the comments service will be the only thing that knows how to process this very specialized update to what a comment is)
+7. comments service changes comment.status to "approved" and emits a type:"CommentUpdated" event to the event bus
+8. event bus emits "CommentUpdated" event to the query service, which updates the existing data in its own store
+
+** query service only listens for 'updated' events **

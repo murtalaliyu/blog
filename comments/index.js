@@ -10,6 +10,7 @@ app.use(cors());
 
 const commentsByPostId = {};
 
+// return all comments in a post
 app.get('/posts/:id/comments', (req, res) => {
 	res.send(commentsByPostId[req.params.id] || []);
 });
@@ -19,7 +20,7 @@ app.post('/posts/:id/comments', async (req, res) => {
 	const {content} = req.body;
 
 	const comments = commentsByPostId[req.params.id] || [];		// get current comments or empty array
-	comments.push({ id: commentId, content });
+	comments.push({ id: commentId, content, status: 'pending' });
 
 	commentsByPostId[req.params.id] = comments;		// replace old comments array with new
 
@@ -29,15 +30,40 @@ app.post('/posts/:id/comments', async (req, res) => {
 		data: {
 			id: commentId,
 			content,
-			postId: req.params.id
+			postId: req.params.id,
+			status: 'pending'
 		}
 	});
 
 	res.status(201).send(comments);		// returns all comments for this post
 });
 
-app.post('/events', (req, res) => {
+app.post('/events', async (req, res) => {
 	console.log('Received event:', req.body.type);		// log event receipt
+
+	const { type, data } = req.body;
+
+	if (type === 'CommentModerated') {
+		const { postId, id, status, content } = data;
+		const comments = commentsByPostId[postId];
+
+		const comment = comments.find(comment => {
+			return comment.id === id;
+		});
+		comment.status = status;
+
+		// emit event
+		await axios.post('http://localhost:4005/events', {
+			type: 'CommentUpdated',
+			data: {
+				id,
+				status,
+				postId,
+				content
+			}
+		});
+	}
+
 	res.send({});		// acknowledge receipt
 });
 
