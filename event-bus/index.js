@@ -5,11 +5,13 @@ const axios = require('axios');
 const app = express();
 app.use(bodyParser.json());
 
+const events = [];
 
 app.post("/events", (req, res) => {
 	console.log('Received event:', req.body.type);
-
 	const event = req.body;
+
+	events.push(event);	// persist event
 
 	// send to all listeners
 	axios.post('http://localhost:4000/events', event);
@@ -21,7 +23,9 @@ app.post("/events", (req, res) => {
 });
 
 
-
+app.get('/events', (req, res) => {
+	res.send(events);
+});
 
 
 

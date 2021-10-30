@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 app.use(bodyParser.json());
@@ -27,15 +28,7 @@ const posts = {};
 	}
 */
 
-app.get('/posts', (req, res) => {
-	res.send(posts);
-});
-
-app.post('/events', (req, res) => {
-	console.log('Received event:', req.body.type);		// log event receipt
-
-	const { type, data } = req.body;
-
+const handleEvent = (type, data) => {
 	if (type === 'PostCreated') {
 		const { title, id } = data;
 		posts[id] = { id, title, comments:[] };
@@ -58,6 +51,18 @@ app.post('/events', (req, res) => {
 		comment.status = status;
 		comment.content = content;
 	}
+};
+
+app.get('/posts', (req, res) => {
+	res.send(posts);
+});
+
+app.post('/events', (req, res) => {
+	console.log('Received event:', req.body.type);		// log event receipt
+
+	const { type, data } = req.body;
+
+	handleEvent(type, data);
 
 	//console.log(posts);
 	res.send({});
@@ -73,6 +78,13 @@ app.post('/events', (req, res) => {
 
 
 // ----------------------------------------------------------------------------
-app.listen(4002, () => {
+app.listen(4002, async () => {
 	console.log('Listening on 4002');
+
+	// get unsynced events
+	const res = await axios.get('http://localhost:4005/events');
+	for (let event of res.data) {
+		console.log('Processing event:', event.type);
+		handleEvent(event.type, event.data);
+	}
 });
