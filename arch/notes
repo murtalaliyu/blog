@@ -1,2 +1,5 @@
 1. when query service loses data (posts or comments, or any other type), client no longer displays the missing data.
-2. have to document what different properties exists inside every event that exists inside our application
+2. have to document what different properties exists inside every event that exists inside our application.
+3. DO NOT CREATE KUBERNETES OBJECTS DIRECTLY. ALWAYS USE A CONFIG FILE.
+4. Docker in general is just about running individual containers while kubernetes is mostly about running a bunch of containers together.
+5. add .gitignore to dockerignore and add .dockerignore to gitignore
