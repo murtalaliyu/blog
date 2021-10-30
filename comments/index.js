@@ -15,6 +15,7 @@ app.get('/posts/:id/comments', (req, res) => {
 	res.send(commentsByPostId[req.params.id] || []);
 });
 
+// create a comment
 app.post('/posts/:id/comments', async (req, res) => {
 	const commentId = randomBytes(4).toString('hex');
 	const {content} = req.body;
@@ -25,7 +26,7 @@ app.post('/posts/:id/comments', async (req, res) => {
 	commentsByPostId[req.params.id] = comments;		// replace old comments array with new
 
 	// emit event
-	await axios.post('http://localhost:4005/events', {
+	await axios.post('http://event-bus-clusterip-srv:4005/events', {
 		type: 'CommentCreated',
 		data: {
 			id: commentId,
@@ -38,6 +39,7 @@ app.post('/posts/:id/comments', async (req, res) => {
 	res.status(201).send(comments);		// returns all comments for this post
 });
 
+// listen for events
 app.post('/events', async (req, res) => {
 	console.log('Received event:', req.body.type);		// log event receipt
 
@@ -53,7 +55,7 @@ app.post('/events', async (req, res) => {
 		comment.status = status;
 
 		// emit event
-		await axios.post('http://localhost:4005/events', {
+		await axios.post('http://event-bus-clusterip-srv:4005/events', {
 			type: 'CommentUpdated',
 			data: {
 				id,
