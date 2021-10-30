@@ -13,11 +13,11 @@ app.post("/events", (req, res) => {
 
 	events.push(event);	// persist event
 
-	// send to all listeners
-	axios.post('http://localhost:4000/events', event);
-	axios.post('http://localhost:4001/events', event);
+	// emit to all listeners
+	axios.post('http://posts-clusterip-srv:4000/events', event);  // emit event to posts pod through its cluster ip service
+	/*axios.post('http://localhost:4001/events', event);
 	axios.post('http://localhost:4002/events', event);
-	axios.post('http://localhost:4003/events', event);
+	axios.post('http://localhost:4003/events', event);*/
 
 	res.send({ status: 'OK' });
 });

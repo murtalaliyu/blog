@@ -21,8 +21,8 @@ app.post('/posts', async (req, res) => {
 		id, title
 	};
 
-	// emit event
-	await axios.post('http://localhost:4005/events', {
+	// emit event to event-bus pod through its cluster ip service
+	await axios.post('http://event-bus-clusterip-srv:4005/events', {
 		type: 'PostCreated',
 		data: {
 			id, title
@@ -43,6 +43,6 @@ app.post('/events', (req, res) => {
 
 // ----------------------------------------------------------------------------
 app.listen(4000, () => {
-	console.log('v70');
+	console.log('v71');
 	console.log('Listening on 4000');
 });
