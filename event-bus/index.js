@@ -7,6 +7,7 @@ app.use(bodyParser.json());
 
 const events = [];
 
+// listen for events and forward to listeners
 app.post("/events", (req, res) => {
 	console.log('Received event:', req.body.type);
 	const event = req.body;

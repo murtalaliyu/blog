@@ -53,10 +53,12 @@ const handleEvent = (type, data) => {
 	}
 };
 
+// get query's posts data structure which returns all posts with associated comments
 app.get('/posts', (req, res) => {
 	res.send(posts);
 });
 
+// listen for events
 app.post('/events', (req, res) => {
 	console.log('Received event:', req.body.type);		// log event receipt
 

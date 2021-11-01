@@ -10,11 +10,13 @@ app.use(cors());
 
 const posts = {};
 
+// get all posts (deprecated. query service is handling this request. this returns posts with no comments)
 app.get('/posts', (req, res) => {
 	res.send(posts);
 });
 
-app.post('/posts', async (req, res) => {
+// create a post
+app.post('/posts/create', async (req, res) => {
 	const id = randomBytes(4).toString('hex');
 	const { title } = req.body;
 	posts[id] = {
@@ -32,6 +34,7 @@ app.post('/posts', async (req, res) => {
 	res.status(201).send(posts[id]);
 });
 
+// listen for events
 app.post('/events', (req, res) => {
 	console.log('Received event:', req.body.type);		// log event receipt
 	res.send({});		// acknowledge receipt
