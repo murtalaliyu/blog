@@ -53,10 +53,12 @@ const handleEvent = (type, data) => {
 	}
 };
 
+// get query's posts data structure which returns all posts with associated comments
 app.get('/posts', (req, res) => {
 	res.send(posts);
 });
 
+// listen for events
 app.post('/events', (req, res) => {
 	console.log('Received event:', req.body.type);		// log event receipt
 
@@ -82,7 +84,7 @@ app.listen(4002, async () => {
 	console.log('Listening on 4002');
 
 	// get unsynced events
-	const res = await axios.get('http://localhost:4005/events');
+	const res = await axios.get('http://event-bus-clusterip-srv:4005/events');
 	for (let event of res.data) {
 		console.log('Processing event:', event.type);
 		handleEvent(event.type, event.data);

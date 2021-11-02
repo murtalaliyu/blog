@@ -10,19 +10,21 @@ app.use(cors());
 
 const posts = {};
 
+// get all posts (deprecated. query service is handling this request. this returns posts with no comments)
 app.get('/posts', (req, res) => {
 	res.send(posts);
 });
 
-app.post('/posts', async (req, res) => {
+// create a post
+app.post('/posts/create', async (req, res) => {
 	const id = randomBytes(4).toString('hex');
 	const { title } = req.body;
 	posts[id] = {
 		id, title
 	};
 
-	// emit event
-	await axios.post('http://localhost:4005/events', {
+	// emit event to event-bus pod through its cluster ip service
+	await axios.post('http://event-bus-clusterip-srv:4005/events', {
 		type: 'PostCreated',
 		data: {
 			id, title
@@ -32,6 +34,7 @@ app.post('/posts', async (req, res) => {
 	res.status(201).send(posts[id]);
 });
 
+// listen for events
 app.post('/events', (req, res) => {
 	console.log('Received event:', req.body.type);		// log event receipt
 	res.send({});		// acknowledge receipt
@@ -43,6 +46,6 @@ app.post('/events', (req, res) => {
 
 // ----------------------------------------------------------------------------
 app.listen(4000, () => {
-	console.log('v70');
+	console.log('v1000');
 	console.log('Listening on 4000');
 });
